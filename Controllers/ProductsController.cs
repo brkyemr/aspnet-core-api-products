@@ -44,5 +44,17 @@ public class ProductsController:ControllerBase
         return Ok(p);
     }
 
+
+    [HttpPost]
+    public async Task<IActionResult> CreateProduct(Product entity)
+    {
+        _context.Products.Add(entity);
+        await _context.SaveChangesAsync();
+
+        //for response code 201 
+        //CreatedAtAction oluşan ürünü sorgulama linki dönüyor response a     ====> localhost:5000/api/products/1 => GET
+        return CreatedAtAction(nameof(GetProduct),new { id = entity.ProductId}, entity);
+    }
+
 }
 }
