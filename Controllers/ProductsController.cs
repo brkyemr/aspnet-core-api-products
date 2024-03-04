@@ -90,5 +90,31 @@ public class ProductsController:ControllerBase
         return Ok(product);
     
     }
+
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var product = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
+        
+        if (product == null)
+        {
+            return NotFound();
+        }
+        _context.Products.Remove(product);
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
 }
 }
