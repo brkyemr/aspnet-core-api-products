@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProductsAPI.Models;
 
 namespace ProductsAPI.Controllers{
@@ -8,44 +9,33 @@ namespace ProductsAPI.Controllers{
 [Route("api/[controller]")]  //controller = products' a denk gelir.
 public class ProductsController:ControllerBase
 {
-    private static List<Product>? _products;
 
-    public ProductsController() 
+    private readonly ProductsContext _context;
+
+    public ProductsController(ProductsContext context) 
     { 
-        _products = new List<Product>
-        {
-            new() {ProductId = 1, ProductName = "Iphone 11",Price = 15000, IsActive = true },
-            new() {ProductId = 2, ProductName = "Iphone 12",Price = 25000, IsActive = true },
-            new() {ProductId = 3, ProductName = "Iphone 13",Price = 35000, IsActive = true },
-            new() {ProductId = 4, ProductName = "Iphone 14",Price = 45000, IsActive = true }
-
-        };
+        _context = context;
     }
 
 
     //localhost:3000/api/products => get
     [HttpGet]
-    public IActionResult GetProducts()
+    public async Task<IActionResult> GetProducts()
     {
-        //return _products ?? new List<Product>();
-        if (_products == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(_products);
+        var products = await _context.Products.ToListAsync();
+        return Ok(products);
     }
 
     //localhost:5000/api/products/1 => GET
     [HttpGet("{id}")]
-    public IActionResult GetProduct(int? id)
+    public async Task<IActionResult> GetProduct(int? id)
     {
         //return _products?.FirstOrDefault(i=> i.ProductId == id) ?? new Product(); //null ise boş product nesnesi attık
         if (id == null)
         {
             return NotFound();
         }
-        var p = _products?.FirstOrDefault(i => i.ProductId == id);
+        var p = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
 
         if(p == null)
         {
