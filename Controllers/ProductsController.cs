@@ -56,5 +56,39 @@ public class ProductsController:ControllerBase
         return CreatedAtAction(nameof(GetProduct),new { id = entity.ProductId}, entity);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(int id,Product entity)
+    {
+        if (id != entity.ProductId)
+        {
+            return BadRequest();
+        }
+
+        var product = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
+        if(product == null)
+        {
+            return NotFound();
+        }
+        
+        if(entity.ProductName != null )
+        {
+            product.ProductName = entity.ProductName;
+        }
+        if(entity.Price != 0 )
+        {
+            product.Price = entity.Price;
+        }
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            
+            return NotFound();
+        }
+        return Ok(product);
+    
+    }
 }
 }
