@@ -2,6 +2,8 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ProductsAPI.Migrations
 {
     /// <inheritdoc />
@@ -23,6 +25,17 @@ namespace ProductsAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.ProductId);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "ProductId", "IsActive", "Price", "ProductName" },
+                values: new object[,]
+                {
+                    { 1, false, 15000m, "Iphone 11" },
+                    { 2, true, 25000m, "Iphone 12" },
+                    { 3, true, 35000m, "Iphone 13" },
+                    { 4, true, 45000m, "Iphone 14" }
                 });
         }
 

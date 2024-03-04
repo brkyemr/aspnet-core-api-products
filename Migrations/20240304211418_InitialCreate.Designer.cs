@@ -10,7 +10,7 @@ using ProductsAPI.Models;
 namespace ProductsAPI.Migrations
 {
     [DbContext(typeof(ProductsContext))]
-    [Migration("20240304210710_InitialCreate")]
+    [Migration("20240304211418_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,6 +37,36 @@ namespace ProductsAPI.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductId = 1,
+                            IsActive = false,
+                            Price = 15000m,
+                            ProductName = "Iphone 11"
+                        },
+                        new
+                        {
+                            ProductId = 2,
+                            IsActive = true,
+                            Price = 25000m,
+                            ProductName = "Iphone 12"
+                        },
+                        new
+                        {
+                            ProductId = 3,
+                            IsActive = true,
+                            Price = 35000m,
+                            ProductName = "Iphone 13"
+                        },
+                        new
+                        {
+                            ProductId = 4,
+                            IsActive = true,
+                            Price = 45000m,
+                            ProductName = "Iphone 14"
+                        });
                 });
 #pragma warning restore 612, 618
         }
