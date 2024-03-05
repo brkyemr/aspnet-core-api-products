@@ -10,7 +10,7 @@ using ProductsAPI.Models;
 namespace ProductsAPI.Migrations
 {
     [DbContext(typeof(ProductsContext))]
-    [Migration("20240304211418_InitialCreate")]
+    [Migration("20240304235224_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -32,6 +32,7 @@ namespace ProductsAPI.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProductName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("ProductId");

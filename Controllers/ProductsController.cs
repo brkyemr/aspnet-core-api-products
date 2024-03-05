@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProductsAPI.DTO;
 using ProductsAPI.Models;
 
 namespace ProductsAPI.Controllers{
@@ -22,7 +23,12 @@ public class ProductsController:ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProducts()
     {
-        var products = await _context.Products.ToListAsync();
+        var products = await _context.Products.Where(i => i.IsActive).Select(p=> 
+        new ProductDTO{
+            ProductId = p.ProductId,
+            ProductName = p.ProductName,
+            Price = p.Price
+        }).ToListAsync();
         return Ok(products);
     }
 
@@ -35,7 +41,15 @@ public class ProductsController:ControllerBase
         {
             return NotFound();
         }
-        var p = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
+        var p = await _context.Products
+        .Select(p=> 
+        new ProductDTO{
+            ProductId = p.ProductId,
+            ProductName = p.ProductName,
+            Price = p.Price
+        })
+        //.Select(p=> ProductToDTO(p))
+        .FirstOrDefaultAsync(i => i.ProductId == id);
 
         if(p == null)
         {
@@ -69,15 +83,9 @@ public class ProductsController:ControllerBase
         {
             return NotFound();
         }
-        
-        if(entity.ProductName != null )
-        {
-            product.ProductName = entity.ProductName;
-        }
-        if(entity.Price != 0 )
-        {
-            product.Price = entity.Price;
-        }
+        product.ProductName = entity.ProductName;
+        product.Price = entity.Price;
+        product.IsActive = entity.IsActive;
         try
         {
             await _context.SaveChangesAsync();
@@ -115,6 +123,15 @@ public class ProductsController:ControllerBase
             return NotFound();
         }
         return NoContent();
+    }
+
+    private static ProductDTO ProductToDTO(Product p){
+        return new ProductDTO 
+        {
+            ProductId = p.ProductId,
+            ProductName = p.ProductName,
+            Price = p.Price
+        };
     }
 }
 }
