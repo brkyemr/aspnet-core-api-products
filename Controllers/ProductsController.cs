@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsAPI.DTO;
@@ -33,6 +34,7 @@ public class ProductsController:ControllerBase
     }
 
     //localhost:5000/api/products/1 => GET
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProduct(int? id)
     {
@@ -42,14 +44,15 @@ public class ProductsController:ControllerBase
             return NotFound();
         }
         var p = await _context.Products
-        .Select(p=> 
+        /*.Select(p=> 
         new ProductDTO{
             ProductId = p.ProductId,
             ProductName = p.ProductName,
             Price = p.Price
-        })
-        //.Select(p=> ProductToDTO(p))
-        .FirstOrDefaultAsync(i => i.ProductId == id);
+        })*/
+        .Where(i=> i.ProductId == id)
+        .Select(p=> ProductToDTO(p))
+        .FirstOrDefaultAsync();
 
         if(p == null)
         {
@@ -58,7 +61,7 @@ public class ProductsController:ControllerBase
         return Ok(p);
     }
 
-
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateProduct(Product entity)
     {
@@ -69,7 +72,8 @@ public class ProductsController:ControllerBase
         //CreatedAtAction oluşan ürünü sorgulama linki dönüyor response a     ====> localhost:5000/api/products/1 => GET
         return CreatedAtAction(nameof(GetProduct),new { id = entity.ProductId}, entity);
     }
-
+    
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(int id,Product entity)
     {
@@ -99,7 +103,7 @@ public class ProductsController:ControllerBase
     
     }
 
-
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(int? id)
     {
@@ -126,6 +130,14 @@ public class ProductsController:ControllerBase
     }
 
     private static ProductDTO ProductToDTO(Product p){
+        var entity = new ProductDTO();
+        if (p != null)
+        {
+            entity.ProductId = p.ProductId;
+            entity.ProductName = p.ProductName;
+            entity.Price = p.Price;
+
+        }
         return new ProductDTO 
         {
             ProductId = p.ProductId,
